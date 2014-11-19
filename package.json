@@ -1,1 +1,11 @@
-{}
+{
+  "dependencies": {
+    "adaptive-quadratic-curve": "^1.0.2",
+    "opentype": "^0.1.2",
+    "triangulate-contours": "^1.0.1"
+  },
+  "devDependencies": {
+    "beefy": "^2.1.1",
+    "fc": "^1.4.0"
+  }
+}
