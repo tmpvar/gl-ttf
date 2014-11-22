@@ -22,6 +22,10 @@ function createFont(path, cb) {
     // you can easily get the unicode char code
     // from a keypress event (e.which)
     function buildCharacter(charCode) {
+      if (Object.prototype.toString.apply(charCode) === '[object String]') {
+        charCode = charCode.charCodeAt(0);
+      }
+
       if (cachedCharacters[charCode]) {
         return cachedCharacters[charCode];
       }
