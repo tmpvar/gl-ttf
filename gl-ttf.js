@@ -19,7 +19,7 @@ function createFont(path, cb) {
 
 
     var cachedCharacters = {};
-    // you can easily get the charCode
+    // you can easily get the unicode char code
     // from a keypress event (e.which)
     function buildCharacter(charCode) {
       if (cachedCharacters[charCode]) {
@@ -31,15 +31,8 @@ function createFont(path, cb) {
         return null;
       }
 
-
       var polygons = segmentisePath(glyph.path.commands);
-
-      // TODO: super unoptimized
-      var triangles = triangulate(polygons.map(function(a) {
-        return a.filter(Boolean).map(function(v) {
-          return v.slice(0, 2);
-        });
-      }));
+      var triangles = triangulate(polygons);
 
       cachedCharacters[charCode] = {
         polygons: polygons,

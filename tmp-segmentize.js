@@ -12,7 +12,7 @@ function segmentizePath(commands) {
   commands.forEach(function(command, i) {
     switch (command.type) {
       case 'M':
-        segments.push([command.x, command.y, true]);
+        segments.push([command.x, command.y]);
         if (segments.length > 1) {
           // segments.push(false);
           polygons.push(segments);
@@ -34,7 +34,6 @@ function segmentizePath(commands) {
 
       case 'Z':
         if (segments.length) {
-          segments.push(false);
           polygons.push(segments);
           segments = [];
         }
@@ -43,7 +42,6 @@ function segmentizePath(commands) {
   });
 
   if (segments.length) {
-    segments.push(false);
     polygons.push(segments);
     segments = [];
   }
