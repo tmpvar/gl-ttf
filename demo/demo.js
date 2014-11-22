@@ -47,7 +47,7 @@ function drawCursor(ctx, advance) {
   ctx.beginPath();
     ctx.moveTo(advance, cursor[1] - 100);
     ctx.lineTo(advance, cursor[1] + 750);
-    ctx.lineWidth=5;
+    ctx.lineWidth=3;
     ctx.strokeStyle = "red";
     ctx.stroke();
 }
@@ -58,7 +58,6 @@ var ctx = require('fc')(function() {
 
   ctx.fillStyle = "orange";
   ctx.save();
-    // ctx.translate(window.innerWidth/2, 0);
     ctx.translate(20, 400);
     ctx.scale(.25, -.25);
 
@@ -132,7 +131,6 @@ var ctx = require('fc')(function() {
       ctx.strokeStyle = "purple"
       ctx.stroke();
     });
-
 
     left += c.glyph.advanceWidth;
     ctx.restore();

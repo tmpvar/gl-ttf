@@ -41,11 +41,13 @@ function createFont(path, cb) {
         });
       }));
 
-      return {
+      cachedCharacters[charCode] = {
         polygons: polygons,
         glyph: glyph,
         triangles: triangles
       };
+
+      return cachedCharacters[charCode];
     }
 
     cb(null, buildCharacter);
