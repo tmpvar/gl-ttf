@@ -14,6 +14,7 @@ createFont('node_modules/opentype/test/fonts/sourcesanspro-regular.ttf', functio
           text.splice(cursorChar-1,1);
           cursorChar--;
           e.preventDefault();
+          cursorOn = true;
         }
       break;
 
@@ -28,18 +29,9 @@ createFont('node_modules/opentype/test/fonts/sourcesanspro-regular.ttf', functio
           cursorChar++;
         }
       break;
-
-
-      default:
-      console.log(e.keyCode);
-
     }
-  })
-
-
-
-
-})
+  });
+});
 
 var cursor = [0, 50];
 var cursorChar = 0;
@@ -50,6 +42,16 @@ setInterval(function() {
   cursorOn = !cursorOn;
 }, 500);
 
+
+function drawCursor(ctx, advance) {
+  ctx.beginPath();
+    ctx.moveTo(advance, cursor[1] - 100);
+    ctx.lineTo(advance, cursor[1] + 750);
+    ctx.lineWidth=5;
+    ctx.strokeStyle = "red";
+    ctx.stroke();
+}
+
 var ctx = require('fc')(function() {
 
   ctx.clear();
@@ -57,8 +59,12 @@ var ctx = require('fc')(function() {
   ctx.fillStyle = "orange";
   ctx.save();
     // ctx.translate(window.innerWidth/2, 0);
-    ctx.translate(0, 400);
+    ctx.translate(20, 400);
     ctx.scale(.25, -.25);
+
+  if (!text.length && cursorOn) {
+    drawCursor(ctx, 0);
+  }
 
   var left = 0;
   text.forEach(function(c, ci) {
@@ -66,13 +72,9 @@ var ctx = require('fc')(function() {
 
     ctx.save();
     ctx.translate(left, 0);
+
     if (cursorOn && ci+1 === cursorChar) {
-      ctx.beginPath();
-        ctx.moveTo(c.glyph.advanceWidth, cursor[1] - 100);
-        ctx.lineTo(c.glyph.advanceWidth, cursor[1] + 750);
-        ctx.lineWidth=5;
-        ctx.strokeStyle = "red";
-        ctx.stroke();
+      drawCursor(ctx, c.glyph.advanceWidth);
     }
 
     polygons.forEach(function(polygon, p) {
@@ -132,7 +134,7 @@ var ctx = require('fc')(function() {
     });
 
 
-    left+=c.glyph.advanceWidth;
+    left += c.glyph.advanceWidth;
     ctx.restore();
 
   });
