@@ -57,6 +57,6 @@ function createFont(path, cb) {
       return cachedCharacters[charCode];
     }
 
-    cb(null, buildCharacter);
+    cb(null, buildCharacter, font);
   });
 }
