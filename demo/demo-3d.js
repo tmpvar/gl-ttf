@@ -12,10 +12,12 @@ var createFont         = require('../gl-ttf');
 var m4scratch = mat4.create();
 
 var camera = createCamera(
-  [10, 0, 2],
+  [10, 0, 10],
   [0, 0, 0],
   [0, 1, 0]
 );
+
+camera.distance = 10;
 
 
 var gl = createWebGLContext(render, true, 3);

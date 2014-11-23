@@ -4,6 +4,10 @@
       "glslify"
     ]
   },
+  "scripts" : {
+    "demo-3d" : "beefy demo/demo-3d.js --open --live",
+    "demo-2d" : "beefy demo/demo-2d.js --open --live"
+  },
   "dependencies": {
     "adaptive-quadratic-curve": "^1.0.2",
     "opentype": "^0.1.2",
