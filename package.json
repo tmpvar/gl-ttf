@@ -1,4 +1,9 @@
 {
+  "browserify" : {
+    "transform" : [
+      "glslify"
+    ]
+  },
   "dependencies": {
     "adaptive-quadratic-curve": "^1.0.2",
     "opentype": "^0.1.2",
@@ -6,6 +11,9 @@
   },
   "devDependencies": {
     "beefy": "^2.1.1",
-    "fc": "^1.4.0"
+    "fc": "^1.4.0",
+    "gl-clear": "^1.0.0",
+    "gl-geometry": "^1.0.0",
+    "glslify": "^1.6.0"
   }
 }
