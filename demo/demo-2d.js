@@ -44,12 +44,14 @@ setInterval(function() {
 
 
 function drawCursor(ctx, advance) {
-  ctx.beginPath();
-    ctx.moveTo(advance, cursor[1] - 100);
-    ctx.lineTo(advance, cursor[1] + 750);
-    ctx.lineWidth=3;
-    ctx.strokeStyle = "red";
-    ctx.stroke();
+  ctx.save();
+    ctx.beginPath();
+      ctx.moveTo(advance, cursor[1] - 100);
+      ctx.lineTo(advance, cursor[1] + 750);
+      ctx.lineWidth=3;
+      ctx.strokeStyle = "red";
+      ctx.stroke();
+  ctx.restore();
 }
 
 var ctx = require('fc')(function() {
