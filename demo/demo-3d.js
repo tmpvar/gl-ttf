@@ -81,12 +81,13 @@ function unique(array) {
 }
 
 function extrude(polygon, amount, sc) {
-  polygon = unique(polygon);
   sc = sc || {
     cells : [],
     positions: [],
     normals: []
   };
+
+  polygon = unique(polygon);
 
   var cells = sc.cells;
   var positions = sc.positions;
@@ -195,20 +196,25 @@ function fontCreated(e, buildCharacter, font) {
 
   'h∑llø!'.split('').forEach(function(c) {
     var character = buildCharacter(c);
-    var triangles = character.triangles;
+    if (!character.extruded) {
 
-    var extrudeAmount = unitsPerEm / 10;
+      var triangles = character.triangles;
 
-    createOffsetCap(triangles, extrudeAmount);
+      var extrudeAmount = unitsPerEm / 10;
 
-    character.polygons.forEach(function(polygon) {
-      extrude(polygon, extrudeAmount, character.triangles);
-    });
+      createOffsetCap(triangles, extrudeAmount);
 
-    character.geometry = createGeometry(gl)
-      .attr('positions', triangles.positions)
-      .attr('normals', triangles.normals)
-      .faces(triangles.cells);
+      character.polygons.forEach(function(polygon) {
+        extrude(polygon, extrudeAmount, character.triangles);
+      });
+
+      character.geometry = createGeometry(gl)
+        .attr('positions', triangles.positions)
+        .attr('normals', triangles.normals)
+        .faces(triangles.cells);
+
+      character.extruded = true;
+    }
 
     letters.push(character);
   });
