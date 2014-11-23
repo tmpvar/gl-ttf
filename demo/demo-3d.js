@@ -34,7 +34,7 @@ var letters = [];
 
 var characterPos = [0, 0, 0];
 var unitsPerEm = 2048;
-
+var start = Date.now();
 function render() {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.enable(gl.DEPTH_TEST);
@@ -55,15 +55,16 @@ function render() {
   );
 
   shader.uniforms.view = camera.view(m4scratch);
+  var now = Date.now();
 
   letters.forEach(function(letter) {
     letter.geometry.bind(shader);
     shader.uniforms.characterPos = characterPos;
+    shader.uniforms.time = now - start;
     letter.geometry.draw(gl.TRIANGLES);
     letter.geometry.bind(shader);
 
     characterPos[0] += letter.glyph.advanceWidth;
-
   });
 }
 
