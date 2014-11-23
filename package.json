@@ -16,6 +16,7 @@
     "gl-geometry": "^1.0.0",
     "gl-matrix-mat4": "^2.2.1-npm",
     "glslify": "^1.6.0",
-    "orbit-camera": "^1.0.0"
+    "orbit-camera": "^1.0.0",
+    "triangle-normal": "0.0.0"
   }
 }

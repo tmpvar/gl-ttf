@@ -41,11 +41,11 @@ function createFont(path, cb) {
         p.push(0);
       });
 
-      var l = triangles.cells.length
+      var l = triangles.positions.length
 
       var normals = triangles.normals = new Array(l);
       for (var i=0; i<l; i++) {
-        normals[i] = [0, 1, 0];
+        normals[i] = [0, 0, 1];
       }
 
       cachedCharacters[charCode] = {

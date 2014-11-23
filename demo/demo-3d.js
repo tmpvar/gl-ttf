@@ -3,6 +3,7 @@ var glslify            = require('glslify')
 var createGLClear      = require('gl-clear');
 var createGeometry     = require('gl-geometry');
 var createCamera       = require('orbit-camera');
+var computeNormal      = require('triangle-normal');
 var mat4               = require('gl-matrix-mat4');
 
 var createFont         = require('../gl-ttf');
@@ -11,10 +12,11 @@ var createFont         = require('../gl-ttf');
 var m4scratch = mat4.create();
 
 var camera = createCamera(
-  [0, 10, 20],
+  [10, 0, 2],
   [0, 0, 0],
   [0, 1, 0]
 );
+
 
 var gl = createWebGLContext(render, true, 3);
 var clear = createGLClear({
@@ -35,7 +37,9 @@ var unitsPerEm = 2048;
 
 function render() {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.enable(gl.DEPTH_TEST);
   clear();
+
 
   characterPos = [0, 0, 0];
   shader.bind();
@@ -63,6 +67,124 @@ function render() {
   });
 }
 
+function unique(array) {
+  var seen = {};
+  return array.filter(function(point) {
+    var key = point.join(',');
+    if (seen[key]) {
+      return false;
+    }
+    seen[key] = true;
+    return true;
+  });
+}
+
+function extrude(polygon, amount, sc) {
+  polygon = unique(polygon);
+  sc = sc || {
+    cells : [],
+    positions: [],
+    normals: []
+  };
+
+  var cells = sc.cells;
+  var positions = sc.positions;
+  var normals = sc.normals;
+  var polygonLength = polygon.length;
+  var i;
+
+  var cellStart = cells.length-1;
+  var start = positions.length;
+
+  for (i=0; i<polygonLength; i++) {
+    var n = polygon[i+1] || polygon[0];
+    var c = polygon[i];
+
+    // wrap around to the start
+    var o = (i<polygonLength-1) ? positions.length : start;
+    positions.push(c.concat(0));
+    positions.push(c.concat(amount));
+
+    cells.push([o + 0, o + 1, o + 2]);
+    cells.push([o + 1, o + 3, o + 2]);
+  }
+
+  var end = positions.length - 1;
+  cells.push([
+    end - 1,
+    end,
+    start
+  ]);
+
+  cells.push([
+    end,
+    start + 1,
+    start
+  ]);
+
+  if (!normals) {
+    cellStart = 0;
+  }
+
+  normals.length = positions.length;
+  for (i=cellStart; i<cells.length; i++) {
+    var a = cells[i][0];
+    var b = cells[i][1];
+    var c = cells[i][2];
+
+    var normal = computeNormal(
+      positions[a][0], positions[a][1], positions[a][2],
+      positions[b][0], positions[b][1], positions[b][2],
+      positions[c][0], positions[c][1], positions[c][2]
+    );
+
+    normals[a] = normal;
+    normals[b] = normal;
+    normals[c] = normal;
+  }
+
+  return sc;
+}
+
+function createOffsetCap(sc, amount) {
+  var cells = sc.cells;
+  var normals = sc.normals;
+  var positions = sc.positions;
+  if (cells.length) {
+    var cellLength = cells.length
+    for (var i=0; i<cellLength; i++) {
+      var a = cells[i][0];
+      var b = cells[i][1];
+      var c = cells[i][2];
+
+      normals.push(normals[a]);
+      a = positions.push([
+        positions[a][0],
+        positions[a][1],
+        positions[a][2] + amount,
+      ]) - 1;
+
+      normals.push(normals[b]);
+      b = positions.push([
+        positions[b][0],
+        positions[b][1],
+        positions[b][2] + amount,
+      ]) - 1;
+
+
+      normals.push(normals[c]);
+      c = positions.push([
+        positions[c][0],
+        positions[c][1],
+        positions[c][2] + amount,
+      ]) - 1;
+
+      cells.push([a, b, c]);
+    }
+  }
+}
+
+
 function fontCreated(e, buildCharacter, font) {
   if (e) {
     throw e;
@@ -70,10 +192,18 @@ function fontCreated(e, buildCharacter, font) {
 
   unitsPerEm = font.unitsPerEm;
 
-  'hello'.split('').forEach(function(c) {
+  'h∑llø!'.split('').forEach(function(c) {
     var character = buildCharacter(c);
-
     var triangles = character.triangles;
+
+    var extrudeAmount = unitsPerEm / 10;
+
+    createOffsetCap(triangles, extrudeAmount);
+
+    character.polygons.forEach(function(polygon) {
+      extrude(polygon, extrudeAmount, character.triangles);
+    });
+
     character.geometry = createGeometry(gl)
       .attr('positions', triangles.positions)
       .attr('normals', triangles.normals)
@@ -144,14 +274,8 @@ function handleMouse(e) {
           camera.pan([0, panSpeed, 0]);
         break;
       }
-      console.log(e.keyCode)
     break;
-
-
-    default:
-      console.log(e);
   }
-
 }
 
 ['mousedown', 'mouseup', 'mousemove', 'mousewheel', 'keydown'].forEach(function(name) {

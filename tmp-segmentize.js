@@ -12,11 +12,11 @@ function segmentizePath(commands) {
   commands.forEach(function(command, i) {
     switch (command.type) {
       case 'M':
-        segments.push([command.x, command.y]);
         if (segments.length > 1) {
-          // segments.push(false);
           polygons.push(segments);
           segments = [];
+        } else {
+          segments.push([command.x, command.y]);
         }
       break;
 
