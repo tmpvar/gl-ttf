@@ -37,6 +37,16 @@ function createFont(path, cb) {
 
       var polygons = segmentisePath(glyph.path.commands);
       var triangles = triangulate(polygons);
+      triangles.positions.forEach(function(p) {
+        p.push(0);
+      });
+
+      var l = triangles.cells.length
+
+      var normals = triangles.normals = new Array(l);
+      for (var i=0; i<l; i++) {
+        normals[i] = [0, 1, 0];
+      }
 
       cachedCharacters[charCode] = {
         polygons: polygons,
